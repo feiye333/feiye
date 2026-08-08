@@ -84,14 +84,14 @@ async function main() {
 
   console.log("   共获取 " + allRecords.length + " 条记录");
 
-  var output = {
+  var output = "var DATA = " + JSON.stringify({
     updated_at: new Date().toISOString(),
     count: allRecords.length,
     records: allRecords,
-  };
+  }, null, 2) + ";";
 
-  fs.writeFileSync("data.json", JSON.stringify(output, null, 2));
-  console.log("3. 已保存到 data.json");
+  fs.writeFileSync("data.js", output);
+  console.log("3. 已保存到 data.js");
 }
 
 main().catch(function(err) {
