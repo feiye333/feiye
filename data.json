@@ -1,5 +1,72 @@
 {
-  "updated_at": "",
-  "count": 0,
-  "records": []
+  "updated_at": "2026-08-08T13:49:25.124Z",
+  "count": 11,
+  "records": [
+    {
+      "bianhao1": "354684",
+      "bianhao2": "5478",
+      "jine": 302,
+      "zhongliang": 300
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "",
+      "bianhao2": "",
+      "jine": 0,
+      "zhongliang": 0
+    },
+    {
+      "bianhao1": "543321",
+      "bianhao2": "7895",
+      "jine": 250,
+      "zhongliang": 100
+    }
+  ]
 }
