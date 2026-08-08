@@ -96,31 +96,20 @@
         </div>
     </div>
 
+    <script src="https://sfile.chatglm.cn/workspace/file/c0/c00ef87f47.js"></script>
     <script>
         var RECORDS = [];
-        var UPDATE_TIME = "";
+        if (typeof DATA !== "undefined") {
+            RECORDS = DATA.records || [];
+        }
 
-        // 页面加载时读取 data.json
-        async function loadData() {
-            try {
-                var resp = await fetch("data.json");
-                if (!resp.ok) {
-                    throw new Error("HTTP " + resp.status);
-                }
-                var data = await resp.json();
-                RECORDS = data.records || [];
-                UPDATE_TIME = data.updated_at || "";
-
-                if (RECORDS.length === 0) {
-                    document.getElementById("updateInfo").textContent =
-                        "数据尚未更新，请在 GitHub Actions 中手动运行一次";
-                } else {
-                    document.getElementById("updateInfo").textContent =
-                        "共 " + RECORDS.length + " 条数据，已加载";
-                }
-            } catch (err) {
-                document.getElementById("updateInfo").textContent =
-                    "数据加载失败: " + err.message;
+        // 页面加载时检查数据
+        function loadData() {
+            var info = document.getElementById("updateInfo");
+            if (RECORDS.length === 0) {
+                info.textContent = "数据尚未更新，请在 GitHub Actions 中手动运行一次";
+            } else {
+                info.textContent = "共 " + RECORDS.length + " 条数据，已加载";
             }
         }
 
