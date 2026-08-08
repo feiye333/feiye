@@ -96,8 +96,11 @@
         </div>
     </div>
 
-    <script src="data.js"></script>
     <script>
+        // DATA_INLINE_START
+        var DATA = { "records": [] };
+        // DATA_INLINE_END
+
         var RECORDS = [];
         if (typeof DATA !== "undefined") {
             RECORDS = DATA.records || [];
