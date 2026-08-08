@@ -66,12 +66,12 @@
         <div class="update-info" id="updateInfo">数据加载中...</div>
 
         <div class="input-group">
-            <label>人物</label>
-            <input type="text" id="info1" placeholder="请输入人物名称">
+            <label>身份</label>
+            <input type="text" id="info1" placeholder="请输入身份信息">
         </div>
         <div class="input-group">
             <label>车辆</label>
-            <input type="text" id="info2" placeholder="请输入车辆编号">
+            <input type="text" id="info2" placeholder="请输入车辆信息">
         </div>
 
         <div class="btn-row">
@@ -103,7 +103,10 @@
         // 页面加载时读取 data.json
         async function loadData() {
             try {
-                var resp = await fetch("data.json?v=" + Date.now());
+                var resp = await fetch("data.json");
+                if (!resp.ok) {
+                    throw new Error("HTTP " + resp.status);
+                }
                 var data = await resp.json();
                 RECORDS = data.records || [];
                 UPDATE_TIME = data.updated_at || "";
@@ -112,17 +115,12 @@
                     document.getElementById("updateInfo").textContent =
                         "数据尚未更新，请在 GitHub Actions 中手动运行一次";
                 } else {
-                    var d = new Date(UPDATE_TIME);
-                    var timeStr = d.getFullYear() + "-" +
-                        String(d.getMonth()+1).padStart(2,"0") + "-" +
-                        String(d.getDate()).padStart(2,"0") + " " +
-                        String(d.getHours()).padStart(2,"0") + ":" +
-                        String(d.getMinutes()).padStart(2,"0");
                     document.getElementById("updateInfo").textContent =
-                        "共 " + RECORDS.length + " 条数据，更新于 " + timeStr;
+                        "共 " + RECORDS.length + " 条数据，已加载";
                 }
             } catch (err) {
-                document.getElementById("updateInfo").textContent = "数据加载失败";
+                document.getElementById("updateInfo").textContent =
+                    "数据加载失败: " + err.message;
             }
         }
 
@@ -138,7 +136,7 @@
             var info2 = document.getElementById("info2").value.trim();
 
             if (!info1 && !info2) {
-                showError("请至少输入人物或车辆信息");
+                showError("请至少输入身份或车辆信息");
                 return;
             }
 
@@ -200,11 +198,6 @@
 
             document.getElementById("loading").style.display = "none";
             document.getElementById("resultSection").style.display = "block";
-        }
-
-        // 注册 Service Worker（用于离线访问和PWA支持）
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("sw.js").catch(function(){});
         }
 
         // 页面加载时自动读取数据
