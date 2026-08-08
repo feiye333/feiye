@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a7f3e">
+    <link rel="manifest" href="https://sfile.chatglm.cn/workspace/file/b3/b3293dedbb.json">
+    <title>数据查询</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 16px;
+        }
+        .container { max-width: 420px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 20px; color: #333; margin-bottom: 20px; margin-top: 12px; }
+        .update-info {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .input-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; color: #666; font-size: 14px; }
+        input {
+            width: 100%; padding: 12px;
+            border: 1px solid #ddd; border-radius: 8px;
+            font-size: 16px; outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: #1a7f3e; }
+        .btn-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        button {
+            flex: 1; padding: 14px;
+            border: none; border-radius: 8px;
+            font-size: 16px; cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-primary { background: #1a7f3e; color: white; }
+        .btn-secondary { background: #e8f5e9; color: #1a7f3e; border: 1px solid #a5d6a7; }
+        button:disabled { opacity: 0.5; }
+        .loading { text-align: center; color: #999; padding: 20px; display: none; }
+        .result { margin-top: 20px; display: none; }
+        .card {
+            background: #f1f8f4; padding: 20px;
+            border-radius: 12px; margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #c8e6c9;
+        }
+        .card-label { color: #1a7f3e; font-size: 13px; margin-bottom: 5px; }
+        .card-value { color: #333; font-size: 28px; font-weight: bold; }
+        .card-detail { color: #888; font-size: 12px; margin-top: 5px; }
+        .error {
+            background: #fef2f2; color: #dc2626;
+            padding: 12px; border-radius: 8px;
+            font-size: 14px; margin-bottom: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>数据查询</h1>
+        <div class="update-info" id="updateInfo">数据加载中...</div>
+
+        <div class="input-group">
+            <label>人物</label>
+            <input type="text" id="info1" placeholder="请输入人物名称">
+        </div>
+        <div class="input-group">
+            <label>车辆</label>
+            <input type="text" id="info2" placeholder="请输入车辆编号">
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-primary" id="btnQuery" onclick="doQuery()">查询</button>
+            <button class="btn-secondary" onclick="location.reload()">刷新</button>
+        </div>
+
+        <div class="loading" id="loading">查询中...</div>
+        <div class="error" id="errorMsg"></div>
+
+        <div class="result" id="resultSection">
+            <div class="card" id="amountCard" style="display:none">
+                <div class="card-label">金额合计</div>
+                <div class="card-value" id="amountResult">0</div>
+                <div class="card-detail" id="amountDetail"></div>
+            </div>
+            <div class="card" id="weightCard" style="display:none">
+                <div class="card-label">重量差额（最大值 - 最小值）</div>
+                <div class="card-value" id="weightResult">0</div>
+                <div class="card-detail" id="weightDetail"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var RECORDS = [];
+        var UPDATE_TIME = "";
+
+        // 页面加载时读取 data.json
+        async function loadData() {
+            try {
+                var resp = await fetch("data.json?v=" + Date.now());
+                var data = await resp.json();
+                RECORDS = data.records || [];
+                UPDATE_TIME = data.updated_at || "";
+
+                if (RECORDS.length === 0) {
+                    document.getElementById("updateInfo").textContent =
+                        "数据尚未更新，请在 GitHub Actions 中手动运行一次";
+                } else {
+                    var d = new Date(UPDATE_TIME);
+                    var timeStr = d.getFullYear() + "-" +
+                        String(d.getMonth()+1).padStart(2,"0") + "-" +
+                        String(d.getDate()).padStart(2,"0") + " " +
+                        String(d.getHours()).padStart(2,"0") + ":" +
+                        String(d.getMinutes()).padStart(2,"0");
+                    document.getElementById("updateInfo").textContent =
+                        "共 " + RECORDS.length + " 条数据，更新于 " + timeStr;
+                }
+            } catch (err) {
+                document.getElementById("updateInfo").textContent = "数据加载失败";
+            }
+        }
+
+        function showError(msg) {
+            var el = document.getElementById("errorMsg");
+            el.textContent = msg;
+            el.style.display = "block";
+            document.getElementById("loading").style.display = "none";
+        }
+
+        async function doQuery() {
+            var info1 = document.getElementById("info1").value.trim();
+            var info2 = document.getElementById("info2").value.trim();
+
+            if (!info1 && !info2) {
+                showError("请至少输入人物或车辆信息");
+                return;
+            }
+
+            if (RECORDS.length === 0) {
+                showError("数据尚未更新，请先在 GitHub 中运行更新任务");
+                return;
+            }
+
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("resultSection").style.display = "none";
+            document.getElementById("errorMsg").style.display = "none";
+
+            // 以下计算全部在手机浏览器本地执行
+            // 1. 查询编号1匹配的行，金额求和
+            var totalAmount = 0;
+            var amountCount = 0;
+            if (info1) {
+                for (var i = 0; i < RECORDS.length; i++) {
+                    if (RECORDS[i].bianhao1 === info1) {
+                        totalAmount += RECORDS[i].jine;
+                        amountCount++;
+                    }
+                }
+            }
+
+            // 2. 查询编号2匹配的行，重量求最大值-最小值
+            var weights = [];
+            if (info2) {
+                for (var j = 0; j < RECORDS.length; j++) {
+                    if (RECORDS[j].bianhao2 === info2) {
+                        weights.push(RECORDS[j].zhongliang);
+                    }
+                }
+            }
+
+            var weightMax = weights.length ? Math.max.apply(null, weights) : 0;
+            var weightMin = weights.length ? Math.min.apply(null, weights) : 0;
+            var weightDiff = weights.length ? (weightMax - weightMin) : 0;
+
+            // 显示结果
+            if (info1) {
+                document.getElementById("amountResult").textContent = "¥" + totalAmount.toFixed(2);
+                document.getElementById("amountDetail").textContent =
+                    "匹配 " + amountCount + " 条记录";
+                document.getElementById("amountCard").style.display = "block";
+            } else {
+                document.getElementById("amountCard").style.display = "none";
+            }
+
+            if (info2) {
+                document.getElementById("weightResult").textContent = weightDiff.toFixed(2);
+                document.getElementById("weightDetail").textContent =
+                    "最大: " + weightMax.toFixed(2) + ", 最小: " + weightMin.toFixed(2) +
+                    ", 匹配 " + weights.length + " 条";
+                document.getElementById("weightCard").style.display = "block";
+            } else {
+                document.getElementById("weightCard").style.display = "none";
+            }
+
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("resultSection").style.display = "block";
+        }
+
+        // 注册 Service Worker（用于离线访问和PWA支持）
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js").catch(function(){});
+        }
+
+        // 页面加载时自动读取数据
+        loadData();
+    </script>
+</body>
+</html>
