@@ -76,7 +76,7 @@
 
         <div class="btn-row">
             <button class="btn-primary" id="btnQuery" onclick="doQuery()">查询</button>
-            <button class="btn-secondary" onclick="location.reload()">刷新</button>
+            <button class="btn-secondary" onclick="clearAll()">清除</button>
         </div>
 
         <div class="loading" id="loading">查询中...</div>
@@ -98,7 +98,7 @@
 
     <script>
         // DATA_INLINE_START
-        var DATA = {"updated_at":"2026-08-09T01:35:15.091Z","count":11,"records":[{"bianhao1":"354684","bianhao2":"5478","jine":302,"zhongliang":300},{"bianhao1":"567899","bianhao2":"3122","jine":230,"zhongliang":200},{"bianhao1":"543321","bianhao2":"2133","jine":870,"zhongliang":800},{"bianhao1":"123456","bianhao2":"3122","jine":980,"zhongliang":900},{"bianhao1":"123456","bianhao2":"2133","jine":560,"zhongliang":500},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"543321","bianhao2":"7895","jine":250,"zhongliang":100}]};
+        var DATA = { "records": [] };
         // DATA_INLINE_END
 
         var RECORDS = [];
@@ -194,6 +194,16 @@
 
         // 页面加载时自动读取数据
         loadData();
+
+        // 清除按钮：清空输入和结果，不重新加载页面
+        function clearAll() {
+            document.getElementById("info1").value = "";
+            document.getElementById("info2").value = "";
+            document.getElementById("resultSection").style.display = "none";
+            document.getElementById("errorMsg").style.display = "none";
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("btnQuery").disabled = false;
+        }
     </script>
 </body>
 </html>
