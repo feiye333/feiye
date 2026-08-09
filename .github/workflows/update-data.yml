@@ -30,6 +30,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add data.js
-          git diff --quiet --cached || git commit -m "Auto-update data.js"
+          git add index.html
+          git diff --quiet --cached || git commit -m "Auto-update data in index.html"
           git push
