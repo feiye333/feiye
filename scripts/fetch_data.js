@@ -1,7 +1,7 @@
 /**
  * 飞书数据抓取脚本
- * 在 GitHub Actions 中运行，从飞书多维表格抓取数据存为 data.json
- * 手机浏览器直接读 data.json，不需要服务端
+ * 在 GitHub Actions 中运行，从飞书多维表格抓取数据
+ * 直接把数据写入 index.html 内（内联方式，不依赖外部文件加载）
  */
 
 const fs = require("fs");
@@ -84,14 +84,21 @@ async function main() {
 
   console.log("   共获取 " + allRecords.length + " 条记录");
 
-  var output = "var DATA = " + JSON.stringify({
+  // 3. 生成数据
+  var dataStr = JSON.stringify({
     updated_at: new Date().toISOString(),
     count: allRecords.length,
     records: allRecords,
-  }, null, 2) + ";";
+  });
 
-  fs.writeFileSync("data.js", output);
-  console.log("3. 已保存到 data.js");
+  // 4. 读取 index.html，替换内联数据
+  console.log("3. 写入 index.html...");
+  var html = fs.readFileSync("index.html", "utf-8");
+  var regex = /\/\/ DATA_INLINE_START[\s\S]*?\/\/ DATA_INLINE_END/;
+  var replacement = "// DATA_INLINE_START\n        var DATA = " + dataStr + ";\n        // DATA_INLINE_END";
+  html = html.replace(regex, replacement);
+  fs.writeFileSync("index.html", html);
+  console.log("   index.html 已更新，数据已内联");
 }
 
 main().catch(function(err) {
