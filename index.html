@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a7f3e">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="data.js">
     <title>数据查询</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -103,37 +103,11 @@
                 <div class="card-detail" id="weightDetail"></div>
             </div>
         </div>
-
-        <div class="divider"></div>
-
-        <button class="toggle-btn" onclick="toggleAdd()">添加新记录</button>
-        <div class="add-section" id="addSection">
-            <div class="input-group">
-                <label>身份</label>
-                <input type="text" id="addInfo1" placeholder="请输入身份信息">
-            </div>
-            <div class="input-group">
-                <label>车辆</label>
-                <input type="text" id="addInfo2" placeholder="请输入车辆信息">
-            </div>
-            <div class="input-group">
-                <label>金额</label>
-                <input type="number" id="addJine" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label>重量</label>
-                <input type="number" id="addZhongliang" placeholder="请输入重量">
-            </div>
-            <button class="btn-primary" style="width:100%" onclick="submitData()">提交到飞书</button>
-            <div style="text-align:center;color:#999;font-size:12px;margin-top:10px;">
-                提交后会在GitHub打开确认页，点Submit即可
-            </div>
-        </div>
     </div>
 
     <script>
         // DATA_INLINE_START
-        var DATA = {"updated_at":"2026-08-09T03:55:53.891Z","count":11,"records":[{"bianhao1":"354684","bianhao2":"5478","jine":302,"zhongliang":300},{"bianhao1":"567899","bianhao2":"3122","jine":230,"zhongliang":200},{"bianhao1":"543321","bianhao2":"2133","jine":870,"zhongliang":800},{"bianhao1":"123456","bianhao2":"3122","jine":980,"zhongliang":900},{"bianhao1":"123456","bianhao2":"2133","jine":560,"zhongliang":500},{"bianhao1":"654321","bianhao2":"2588","jine":1025,"zhongliang":1000},{"bianhao1":"654321","bianhao2":"5888","jine":591,"zhongliang":510},{"bianhao1":"654321","bianhao2":"5888","jine":999,"zhongliang":900},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"","bianhao2":"","jine":0,"zhongliang":0},{"bianhao1":"543321","bianhao2":"7895","jine":250,"zhongliang":100}]};
+        var DATA = { "records": [] };
         // DATA_INLINE_END
 
         var RECORDS = [];
@@ -244,34 +218,6 @@
             document.getElementById("errorMsg").style.display = "none";
             document.getElementById("loading").style.display = "none";
             document.getElementById("btnQuery").disabled = false;
-        }
-
-        // 显示/隐藏添加记录表单
-        function toggleAdd() {
-            var sec = document.getElementById("addSection");
-            if (sec.style.display === "block") {
-                sec.style.display = "none";
-            } else {
-                sec.style.display = "block";
-            }
-        }
-
-        // 提交数据到飞书（通过GitHub Issues中转）
-        function submitData() {
-            var info1 = document.getElementById("addInfo1").value.trim();
-            var info2 = document.getElementById("addInfo2").value.trim();
-            var jine = document.getElementById("addJine").value.trim();
-            var zhongliang = document.getElementById("addZhongliang").value.trim();
-
-            if (!info1 || !info2 || !jine || !zhongliang) {
-                alert("请填写所有字段");
-                return;
-            }
-
-            var body = "身份:" + info1 + "\n车辆:" + info2 + "\n金额:" + jine + "\n重量:" + zhongliang;
-            var url = "https://github.com/feiye333/feiye/issues/new?title=添加数据&body=" + encodeURIComponent(body);
-
-            window.open(url, "_blank");
         }
     </script>
 </body>
